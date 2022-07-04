@@ -15,13 +15,16 @@ exports.fetchReviewByReviewId = (id) => {
 };
 
 exports.updateReviewByReviewId = (id, update) => {
-  const voteIncrement = update.inc_votes;
-  return connection
-    .query(
-      `UPDATE reviews SET votes = votes + $1 WHERE review_id = $2 RETURNING*;`,
-      [voteIncrement, id]
-    )
-    .then(({ rows }) => {
-      return rows[0];
-    });
+  if (update.inc_votes !== undefined) {
+    const voteIncrement = update.inc_votes;
+    return connection
+      .query(
+        `UPDATE reviews SET votes = votes + $1 WHERE review_id = $2 RETURNING*;`,
+        [voteIncrement, id]
+      )
+      .then(({ rows }) => {
+        return rows[0];
+      });
+  }
+  return Promise.reject({ status: 400, msg: "Bad Request" });
 };

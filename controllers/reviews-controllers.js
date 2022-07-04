@@ -14,9 +14,13 @@ exports.getReviewByReviewId = (req, res, next) => {
     });
 };
 
-exports.patchReviewByReviewId = (req, res) => {
+exports.patchReviewByReviewId = (req, res, next) => {
   const id = req.params.review_id;
-  updateReviewByReviewId(id, req.body).then((review) => {
-    res.status(200).send({ review });
-  });
+  updateReviewByReviewId(id, req.body)
+    .then((review) => {
+      res.status(200).send({ review });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };

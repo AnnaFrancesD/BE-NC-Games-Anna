@@ -97,5 +97,17 @@ describe("app", () => {
           );
         });
     });
+    describe("ERRORS", () => {
+      test("status 400, responds with error message if req body is malformed or missing fields", () => {
+        const reviewUpdate = {};
+        return request(app)
+          .patch("/api/reviews/2")
+          .expect(400)
+          .send(reviewUpdate)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad Request");
+          });
+      });
+    });
   });
 });
