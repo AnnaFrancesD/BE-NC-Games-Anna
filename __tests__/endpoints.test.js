@@ -31,4 +31,14 @@ describe("app", () => {
         });
     });
   });
+  describe("ERRORS", () => {
+    test('status 404, responds with message "Not Found"', () => {
+      return request(app)
+        .get("/api/types")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Not Found");
+        });
+    });
+  });
 });
