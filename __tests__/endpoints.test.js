@@ -71,7 +71,7 @@ describe("app", () => {
             expect(msg).toBe("Invalid User Id");
           });
       });
-      test("status 404, responds with error message when passed an id thta does not exist", () => {
+      test("status 404, responds with error message when passed an id that does not exist", () => {
         return request(app)
           .get("/api/reviews/999")
           .expect(404)
@@ -82,7 +82,7 @@ describe("app", () => {
     });
   });
   describe("PATCH /api/reviews/:review_id", () => {
-    test("status 200, responds with the updated review object", () => {
+    test("status 200, responds with the updated review object, for update that increments votes", () => {
       const reviewUpdate = { inc_votes: 1 };
       return request(app)
         .patch("/api/reviews/1")
@@ -97,9 +97,34 @@ describe("app", () => {
           );
         });
     });
+    test("status 200, responds with the updated review object, for update that decrements votes", () => {
+      const reviewUpdate = { inc_votes: -3 };
+      return request(app)
+        .patch("/api/reviews/4")
+        .expect(200)
+        .send(reviewUpdate)
+        .then(({ body: { review } }) => {
+          expect(review).toBeInstanceOf(Object);
+          expect(review).toEqual(
+            expect.objectContaining({
+              votes: 4,
+            })
+          );
+        });
+    });
     describe("ERRORS", () => {
-      test("status 400, responds with error message if req body is malformed or missing fields", () => {
+      test("status 400, responds with error message if req body is an empty object", () => {
         const reviewUpdate = {};
+        return request(app)
+          .patch("/api/reviews/2")
+          .expect(400)
+          .send(reviewUpdate)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad Request");
+          });
+      });
+      test("status 400, responds with error message if update is of incorrect type", () => {
+        const reviewUpdate = { inc_votes: "i am a string, not a number!" };
         return request(app)
           .patch("/api/reviews/2")
           .expect(400)

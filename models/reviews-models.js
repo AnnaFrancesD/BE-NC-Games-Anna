@@ -15,7 +15,7 @@ exports.fetchReviewByReviewId = (id) => {
 };
 
 exports.updateReviewByReviewId = (id, update) => {
-  if (update.inc_votes !== undefined) {
+  if (update.inc_votes !== undefined && typeof update.inc_votes === "number") {
     const voteIncrement = update.inc_votes;
     return connection
       .query(
