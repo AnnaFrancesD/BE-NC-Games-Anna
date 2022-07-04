@@ -91,11 +91,7 @@ describe("app", () => {
         .send(reviewUpdate)
         .then(({ body: { review } }) => {
           expect(review).toBeInstanceOf(Object);
-          expect(review).toEqual(
-            expect.objectContaining({
-              votes: 2,
-            })
-          );
+          expect(review).toEqual(expect.objectContaining({}));
         });
     });
   });
