@@ -31,7 +31,7 @@ describe("app", () => {
         });
     });
     describe("ERRORS", () => {
-      test('status 404, responds with message "Not Found"', () => {
+      test("status 404, responds with error message when passed route that does not exist", () => {
         return request(app)
           .get("/api/types")
           .expect(404)
@@ -61,6 +61,24 @@ describe("app", () => {
             })
           );
         });
+    });
+    describe("ERRORS", () => {
+      test("status 400, responds with error message when passed invalid review id", () => {
+        return request(app)
+          .get("/api/reviews/this-is-not-an-id")
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Invalid User Id");
+          });
+      });
+      test("status 404, responds with error message when passed an id thta does not exist", () => {
+        return request(app)
+          .get("/api/reviews/999")
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("User Id Not Found");
+          });
+      });
     });
   });
 });
