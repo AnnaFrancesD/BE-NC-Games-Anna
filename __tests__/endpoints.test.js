@@ -50,14 +50,15 @@ describe("app", () => {
           expect(review).toBeInstanceOf(Object);
           expect(review).toEqual(
             expect.objectContaining({
-              review_id: expect.any(Number),
-              title: expect.any(String),
-              review_body: expect.any(String),
-              designer: expect.any(String),
-              review_img_url: expect.any(String),
-              votes: expect.any(Number),
-              owner: expect.any(String),
-              created_at: expect.any(String),
+              review_id: 2,
+              title: "Jenga",
+              review_body: "Fiddly fun for all the family",
+              designer: "Leslie Scott",
+              review_img_url:
+                "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+              votes: 5,
+              owner: "philippaclaire9",
+              category: "dexterity",
             })
           );
         });
@@ -71,7 +72,7 @@ describe("app", () => {
             expect(msg).toBe("Invalid User Id");
           });
       });
-      test("status 404, responds with error message when passed an id thta does not exist", () => {
+      test("status 404, responds with error message when passed an id that does not exist", () => {
         return request(app)
           .get("/api/reviews/999")
           .expect(404)
@@ -79,6 +80,23 @@ describe("app", () => {
             expect(msg).toBe("User Id Not Found");
           });
       });
+    });
+  });
+  describe("PATCH /api/reviews/:review_id", () => {
+    test("status 200, responds with the updated review object", () => {
+      const reviewUpdate = { inc_votes: 1 };
+      return request(app)
+        .patch("/api/reviews/1")
+        .expect(200)
+        .send(reviewUpdate)
+        .then(({ body: { review } }) => {
+          expect(review).toBeInstanceOf(Object);
+          expect(review).toEqual(
+            expect.objectContaining({
+              votes: 2,
+            })
+          );
+        });
     });
   });
 });

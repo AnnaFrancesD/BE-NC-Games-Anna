@@ -13,3 +13,7 @@ exports.fetchReviewByReviewId = (id) => {
   }
   return Promise.reject({ status: 400, msg: "Invalid User Id" });
 };
+
+exports.updateReviewByReviewId = (reviewId, reviewUpdate) => {
+  console.log(reviewUpdate);
+};
