@@ -153,5 +153,15 @@ describe("app", () => {
           });
         });
     });
+    describe("ERRORS", () => {
+      test("status 404, responds with error message when passed route that does not exist", () => {
+        return request(app)
+          .get("/api/uzerz")
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Not Found");
+          });
+      });
+    });
   });
 });
