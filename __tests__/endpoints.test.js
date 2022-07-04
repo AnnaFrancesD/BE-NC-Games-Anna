@@ -81,4 +81,21 @@ describe("app", () => {
       });
     });
   });
+  describe("PATCH /api/reviews/:review_id", () => {
+    test("status 200, responds with the updated review object", () => {
+      const reviewUpdate = { inc_votes: 1 };
+      return request(app)
+        .patch("/api/reviews/1")
+        .expect(200)
+        .send(reviewUpdate)
+        .then(({ body: { review } }) => {
+          expect(review).toBeInstanceOf(Object);
+          expect(review).toEqual(
+            expect.objectContaining({
+              votes: 2,
+            })
+          );
+        });
+    });
+  });
 });
