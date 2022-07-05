@@ -1,5 +1,7 @@
 \c nc_games_test
 
-INSERT INTO comments (author, body, review_id)
-VALUES ("bainesface", "I was the werewolf...", 3)
-RETURNING *;
+SELECT reviews.*, COUNT (comments.review_id) AS comment_count FROM reviews
+        LEFT JOIN comments
+        ON reviews.review_id = comments.review_id
+        WHERE reviews.review_id = 2
+        GROUP BY reviews.review_id;

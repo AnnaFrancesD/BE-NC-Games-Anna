@@ -3,6 +3,7 @@ const app = require("../app");
 const connection = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data/index");
+const req = require("express/lib/request");
 
 beforeEach(() => {
   return seed(testData);
@@ -190,45 +191,53 @@ describe("app", () => {
               })
             );
           });
+        });
+    });
+    test("status 200, response array is sorted correctly", () => {
+      return request(app)
+        .get("/api/reviews")
+        .expect(200)
+        .then(({ body: { reviews } }) => {
           expect(reviews).toBeSortedBy("created_at", {
             coerce: true,
             descending: true,
           });
         });
     });
-  });
-  describe("GET /api/reviews/:review_id/comments", () => {
-    test("status 200, responds with an array of comments for the given review_id with the correct properties", () => {
-      return request(app)
-        .get("/api/reviews/3/comments")
-        .then(({ body: { comments } }) => {
-          expect(comments).toBeInstanceOf(Array);
-          comments.forEach((comment) => {
-            expect(comment).toHaveProperty("comment_id");
-            expect(comment).toHaveProperty("votes");
-            expect(comment).toHaveProperty("created_at");
-            expect(comment).toHaveProperty("author");
-            expect(comment).toHaveProperty("body");
-            expect(comment).toHaveProperty("review_id");
+    describe("GET /api/reviews/:review_id/comments", () => {
+      test("status 200, responds with an array of comments for the given review_id with the correct properties", () => {
+        return request(app)
+          .get("/api/reviews/3/comments")
+          .then(({ body: { comments } }) => {
+            expect(comments).toBeInstanceOf(Array);
+            comments.forEach((comment) => {
+              expect(comment).toHaveProperty("comment_id");
+              expect(comment).toHaveProperty("votes");
+              expect(comment).toHaveProperty("created_at");
+              expect(comment).toHaveProperty("author");
+              expect(comment).toHaveProperty("body");
+              expect(comment).toHaveProperty("review_id");
+            });
           });
+      });
+      describe("ERRORS", () => {
+        test("status 400, responds with error message when passed invalid review_id", () => {
+          return request(app)
+            .get("/api/reviews/this-is-not-an-id-either/comments")
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).toBe("Invalid Review Id");
+            });
         });
-    });
-    describe("ERRORS", () => {
-      test("status 400, responds with error message when passed invalid review_id", () => {
-        return request(app)
-          .get("/api/reviews/this-is-not-an-id-either/comments")
-          .expect(400)
-          .then(({ body: { msg } }) => {
-            expect(msg).toBe("Invalid Review Id");
-          });
-      });
-      test("status 404, responds with error message when passed id that does not exist", () => {
-        return request(app)
-          .get("/api/reviews/99/comments")
-          .expect(404)
-          .then(({ body: { msg } }) => {
-            expect(msg).toBe("Review Id Not Found");
-          });
+        test("status 404, responds with error message when passed id that does not exist", () => {
+          return request(app)
+            .get("/api/reviews/99/comments")
+            .expect(404)
+            .then(({ body: { msg } }) => {
+              expect(msg).toBe("Review Id Not Found");
+            });
+        });
       });
     });
   });
+});
