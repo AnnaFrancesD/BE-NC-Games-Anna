@@ -22,7 +22,7 @@ exports.fetchReviewByReviewId = (id) => {
 };
 
 exports.updateReviewByReviewId = (id, update) => {
-  if (update.inc_votes !== undefined && typeof update.inc_votes === "number") {
+  if (typeof update.inc_votes === "number") {
     const voteIncrement = update.inc_votes;
     return connection
       .query(
@@ -52,7 +52,7 @@ exports.fetchReviews = () => {
 };
 
 exports.fetchCommentsByReviewId = (id) => {
-  if (typeof Number(id) === "number" && !isNaN(Number(id))) {
+  if (!isNaN(Number(id))) {
     return connection
       .query(
         `
