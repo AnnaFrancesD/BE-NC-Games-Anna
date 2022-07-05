@@ -69,3 +69,7 @@ WHERE comments.review_id = $1;`,
   }
   return Promise.reject({ status: 400, msg: "Invalid Review Id" });
 };
+
+exports.updateReviewByReviewId = (reviewId, reviewUpdate) => {
+  console.log(reviewUpdate);
+};
