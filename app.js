@@ -5,6 +5,7 @@ const {
   patchReviewByReviewId,
   getReviews,
   getCommentsByReviewId,
+  postComment,
 } = require("./controllers/reviews-controllers");
 const { getUsers } = require("./controllers/users-controllers");
 
@@ -18,6 +19,7 @@ app.patch("/api/reviews/:review_id", patchReviewByReviewId);
 app.get("/api/users", getUsers);
 app.get("/api/reviews", getReviews);
 app.get("/api/reviews/:review_id/comments", getCommentsByReviewId);
+app.post("/api/reviews/:review_id/comments", postComment);
 
 //ERROR HANDLING
 

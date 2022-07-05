@@ -232,3 +232,29 @@ describe("app", () => {
       });
     });
   });
+
+  describe("POST /api/reviews/:review_id/comments", () => {
+    test("status 201, responds with the posted comment", () => {
+      const newComment = {
+        username: "bainesface",
+        body: "I was the werewolf...",
+      };
+      return request(app)
+        .post("/api/reviews/3/comments")
+        .expect(201)
+        .send(newComment)
+        .then(({ body: { comment } }) => {
+          expect(comment).toBeInstanceOf(Object);
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: 7,
+              author: "bainesface",
+              body: "I was the werewolf...",
+              review_id: 3,
+              votes: 0,
+            })
+          );
+        });
+    });
+  });
+});
