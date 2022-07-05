@@ -1,4 +1,5 @@
 \c nc_games_test
 
-SELECT * FROM comments
-WHERE comments.review_id = 3;
+INSERT INTO comments (author, body, review_id)
+VALUES ("bainesface", "I was the werewolf...", 3)
+RETURNING *;

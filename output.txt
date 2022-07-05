@@ -1,8 +1,1 @@
 You are now connected to database "nc_games_test" as user "annadehl".
- comment_id |                                                       body                                                       | review_id |     author      | votes |       created_at       
-------------+------------------------------------------------------------------------------------------------------------------+-----------+-----------------+-------+------------------------
-          2 | My dog loved this game too!                                                                                      |         3 | mallionaire     |    13 | 2021-01-18 10:09:05.41
-          3 | I didn't know dogs could play games                                                                              |         3 | philippaclaire9 |    10 | 2021-01-18 10:09:48.11
-          6 | Not sure about dogs, but my cat likes to get involved with board games, the boxes are their particular favourite |         3 | philippaclaire9 |    10 | 2021-03-27 19:49:48.11
-(3 rows)
-
