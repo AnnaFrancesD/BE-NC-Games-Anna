@@ -146,6 +146,7 @@ describe("app", () => {
         .expect(200)
         .then(({ body: { users } }) => {
           expect(users).toBeInstanceOf(Array);
+          expect(users.length).toBeGreaterThan(0);
           users.forEach((user) => {
             expect(user).toEqual(
               expect.objectContaining({
