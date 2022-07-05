@@ -35,3 +35,18 @@ exports.updateReviewByReviewId = (id, update) => {
   }
   return Promise.reject({ status: 400, msg: "Bad Request" });
 };
+
+exports.fetchReviews = () => {
+  return connection
+    .query(
+      `
+  SELECT a.*, COUNT (b.review_id) AS comment_count FROM reviews a
+  LEFT JOIN comments b
+  ON a.review_id = b.review_id
+  GROUP BY a.review_id
+  ORDER BY created_at DESC;`
+    )
+    .then(({ rows }) => {
+      return rows;
+    });
+};

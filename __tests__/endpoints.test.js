@@ -167,4 +167,34 @@ describe("app", () => {
       });
     });
   });
+  describe("GET /api/reviews", () => {
+    test("status 200, responds with an array of review objects with the correct properties", () => {
+      return request(app)
+        .get("/api/reviews")
+        .expect(200)
+        .then(({ body: { reviews } }) => {
+          expect(reviews).toBeInstanceOf(Array);
+          reviews.forEach((review) => {
+            expect(review).toEqual(
+              expect.objectContaining({
+                owner: expect.any(String),
+                title: expect.any(String),
+                review_id: expect.any(Number),
+                category: expect.any(String),
+                review_img_url: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                review_body: expect.any(String),
+                designer: expect.any(String),
+                comment_count: expect.any(String),
+              })
+            );
+          });
+          expect(reviews).toBeSortedBy("created_at", {
+            coerce: true,
+            descending: true,
+          });
+        });
+    });
+  });
 });
