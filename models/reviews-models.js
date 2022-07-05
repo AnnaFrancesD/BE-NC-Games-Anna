@@ -22,7 +22,7 @@ exports.fetchReviewByReviewId = (id) => {
 };
 
 exports.updateReviewByReviewId = (id, update) => {
-  if (update.inc_votes !== undefined && typeof update.inc_votes === "number") {
+  if (typeof update.inc_votes === "number") {
     const voteIncrement = update.inc_votes;
     return connection
       .query(
@@ -40,10 +40,10 @@ exports.fetchReviews = () => {
   return connection
     .query(
       `
-  SELECT a.*, COUNT (b.review_id) AS comment_count FROM reviews a
-  LEFT JOIN comments b
-  ON a.review_id = b.review_id
-  GROUP BY a.review_id
+  SELECT reviews.*, COUNT (comments.review_id) AS comment_count FROM reviews
+  LEFT JOIN comments
+  ON reviews.review_id = comments.review_id
+  GROUP BY reviews.review_id
   ORDER BY created_at DESC;`
     )
     .then(({ rows }) => {
@@ -52,7 +52,7 @@ exports.fetchReviews = () => {
 };
 
 exports.fetchCommentsByReviewId = (id) => {
-  if (typeof Number(id) === "number" && !isNaN(Number(id))) {
+  if (!isNaN(Number(id))) {
     return connection
       .query(
         `
