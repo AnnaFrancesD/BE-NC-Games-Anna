@@ -71,7 +71,7 @@ describe("app", () => {
           .get("/api/reviews/this-is-not-an-id")
           .expect(400)
           .then(({ body: { msg } }) => {
-            expect(msg).toBe("Invalid User Id");
+            expect(msg).toBe("Invalid Review Id");
           });
       });
       test("status 404, responds with error message when passed an id that does not exist", () => {
@@ -79,7 +79,7 @@ describe("app", () => {
           .get("/api/reviews/999")
           .expect(404)
           .then(({ body: { msg } }) => {
-            expect(msg).toBe("User Id Not Found");
+            expect(msg).toBe("Review Id Not Found");
           });
       });
     });
@@ -212,6 +212,24 @@ describe("app", () => {
             expect(comment).toHaveProperty("review_id");
           });
         });
+    });
+    describe("ERRORS", () => {
+      test("status 400, responds with error message when passed invalid review_id", () => {
+        return request(app)
+          .get("/api/reviews/this-is-not-an-id-either/comments")
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Invalid Review Id");
+          });
+      });
+      test("status 404, responds with error message when passed id that does not exist", () => {
+        return request(app)
+          .get("/api/reviews/99/comments")
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Review Id Not Found");
+          });
+      });
     });
   });
 });

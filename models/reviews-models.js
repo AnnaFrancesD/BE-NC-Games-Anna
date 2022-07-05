@@ -2,23 +2,23 @@ const connection = require("../db/connection");
 
 exports.fetchReviewByReviewId = (id) => {
   if (typeof Number(id) === "number" && !isNaN(Number(id))) {
-    if (Number(id) > 0 && Number(id) < 14) {
-      return connection
-        .query(
-          `SELECT a.*, COUNT (b.review_id) AS comment_count FROM reviews a
+    return connection
+      .query(
+        `SELECT a.*, COUNT (b.review_id) AS comment_count FROM reviews a
         LEFT JOIN comments b
         ON a.review_id = b.review_id
         WHERE a.review_id = $1
         GROUP BY a.review_id;`,
-          [id]
-        )
-        .then((review) => {
+        [id]
+      )
+      .then((review) => {
+        if (review.rowCount > 0) {
           return review.rows[0];
-        });
-    }
-    return Promise.reject({ status: 404, msg: "User Id Not Found" });
+        }
+        return Promise.reject({ status: 404, msg: "Review Id Not Found" });
+      });
   }
-  return Promise.reject({ status: 400, msg: "Invalid User Id" });
+  return Promise.reject({ status: 400, msg: "Invalid Review Id" });
 };
 
 exports.updateReviewByReviewId = (id, update) => {
@@ -52,14 +52,20 @@ exports.fetchReviews = () => {
 };
 
 exports.fetchCommentsByReviewId = (id) => {
-  return connection
-    .query(
-      `
+  if (typeof Number(id) === "number" && !isNaN(Number(id))) {
+    return connection
+      .query(
+        `
   SELECT * FROM comments
 WHERE comments.review_id = $1;`,
-      [id]
-    )
-    .then(({ rows }) => {
-      return rows;
-    });
+        [id]
+      )
+      .then(({ rows }) => {
+        if (rows.length > 0) {
+          return rows;
+        }
+        return Promise.reject({ status: 404, msg: "Review Id Not Found" });
+      });
+  }
+  return Promise.reject({ status: 400, msg: "Invalid Review Id" });
 };
