@@ -50,14 +50,17 @@ describe("app", () => {
           expect(review).toBeInstanceOf(Object);
           expect(review).toEqual(
             expect.objectContaining({
-              review_id: expect.any(Number),
-              title: expect.any(String),
-              review_body: expect.any(String),
-              designer: expect.any(String),
-              review_img_url: expect.any(String),
-              votes: expect.any(Number),
-              owner: expect.any(String),
-              created_at: expect.any(String),
+              review_id: 2,
+              title: "Jenga",
+              review_body: "Fiddly fun for all the family",
+              designer: "Leslie Scott",
+              review_img_url:
+                "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+              votes: 5,
+              owner: "philippaclaire9",
+              comment_count: "3",
+              category: "dexterity",
+              created_at: "2021-01-18T10:01:41.251Z",
             })
           );
         });
