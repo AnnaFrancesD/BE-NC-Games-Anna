@@ -197,4 +197,21 @@ describe("app", () => {
         });
     });
   });
+  describe("GET /api/reviews/:review_id/comments", () => {
+    test("status 200, responds with an array of comments for the given review_id with the correct properties", () => {
+      return request(app)
+        .get("/api/reviews/3/comments")
+        .then(({ body: { comments } }) => {
+          expect(comments).toBeInstanceOf(Array);
+          comments.forEach((comment) => {
+            expect(comment).toHaveProperty("comment_id");
+            expect(comment).toHaveProperty("votes");
+            expect(comment).toHaveProperty("created_at");
+            expect(comment).toHaveProperty("author");
+            expect(comment).toHaveProperty("body");
+            expect(comment).toHaveProperty("review_id");
+          });
+        });
+    });
+  });
 });

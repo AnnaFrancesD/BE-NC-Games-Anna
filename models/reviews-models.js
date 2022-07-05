@@ -50,3 +50,16 @@ exports.fetchReviews = () => {
       return rows;
     });
 };
+
+exports.fetchCommentsByReviewId = (id) => {
+  return connection
+    .query(
+      `
+  SELECT * FROM comments
+WHERE comments.review_id = $1;`,
+      [id]
+    )
+    .then(({ rows }) => {
+      return rows;
+    });
+};
