@@ -238,7 +238,7 @@ describe("app", () => {
             });
           });
       });
-      test("status 200, reviews can be filtered by topic value specified in the query (for request that returns multiple reviews", () => {
+      test("status 200, reviews can be filtered by topic value specified in the query (for request that returns multiple reviews)", () => {
         return request(app)
           .get("/api/reviews/?category=social+deduction")
           .expect(200)
@@ -253,7 +253,6 @@ describe("app", () => {
             });
           });
       });
-
       describe("ERRORS", () => {
         test("status 400, responds with error message if sort_by query is invalid", () => {
           return request(app)
