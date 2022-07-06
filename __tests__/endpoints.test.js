@@ -235,7 +235,7 @@ describe("app", () => {
             .get("/api/reviews/99/comments")
             .expect(404)
             .then(({ body: { msg } }) => {
-              expect(msg).toBe("Review Id Not Found");
+              expect(msg).toBe("Not Found");
             });
         });
       });
