@@ -268,7 +268,7 @@ describe("app", () => {
             .get("/api/reviews/?order=hello")
             .expect(400)
             .then(({ body: { msg } }) => {
-              expect(msg).toBe("Bad Request");
+              expect(msg).toBe("Invalid Query");
             });
         });
         test("status 400, responds with error message if category query is invalid", () => {

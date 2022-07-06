@@ -35,7 +35,7 @@ exports.fetchReviews = (
   order = "DESC",
   category = ""
 ) => {
-  const validQueries = [
+  const validSortByQueries = [
     "title",
     "designer",
     "owner",
@@ -44,13 +44,17 @@ exports.fetchReviews = (
     "category",
     "created_at",
     "votes",
-    "DESC",
-    "ASC",
   ];
+
+  const validOrderByQueries = ["DESC", "ASC"];
 
   const validCategories = ["euro game", "dexterity", "social deduction", ""];
 
-  if (!validQueries.includes(sort_by)) {
+  if (!validSortByQueries.includes(sort_by)) {
+    return Promise.reject({ status: 400, msg: "Invalid Query" });
+  }
+
+  if (!validOrderByQueries.includes(order.toUpperCase())) {
     return Promise.reject({ status: 400, msg: "Invalid Query" });
   }
 
