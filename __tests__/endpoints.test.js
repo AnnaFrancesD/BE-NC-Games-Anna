@@ -72,7 +72,7 @@ describe("app", () => {
           .get("/api/reviews/this-is-not-an-id")
           .expect(400)
           .then(({ body: { msg } }) => {
-            expect(msg).toBe("Invalid Review Id");
+            expect(msg).toBe("Bad Request");
           });
       });
       test("status 404, responds with error message when passed an id that does not exist", () => {
@@ -222,14 +222,38 @@ describe("app", () => {
             expect(reviews).toBeSortedBy("owner");
           });
       });
-      test("status 200, reviews can be filtered by topic value specified in the query", () => {
+      test("status 200, reviews can be filtered by topic value specified in the query (for request that returns one review", () => {
         return request(app)
           .get("/api/reviews/?category=dexterity")
           .expect(200)
           .then(({ body: { reviews } }) => {
-            expect(reviews.length).toBe(11);
+            expect(reviews.length).toBe(1);
+            reviews.forEach((review) => {
+              expect(review).toEqual(
+                expect.objectContaining({
+                  title: "Jenga",
+                  category: "dexterity",
+                })
+              );
+            });
           });
       });
+      test("status 200, reviews can be filtered by topic value specified in the query (for request that returns multiple reviews", () => {
+        return request(app)
+          .get("/api/reviews/?category=social+deduction")
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            expect(reviews.length).toBe(11);
+            reviews.forEach((review) => {
+              expect(review).toEqual(
+                expect.objectContaining({
+                  category: "social deduction",
+                })
+              );
+            });
+          });
+      });
+
       describe("ERRORS", () => {
         test("status 400, responds with error message if sort_by query is invalid", () => {
           return request(app)
@@ -272,7 +296,7 @@ describe("app", () => {
           .get("/api/reviews/this-is-not-an-id-either/comments")
           .expect(400)
           .then(({ body: { msg } }) => {
-            expect(msg).toBe("Invalid Review Id");
+            expect(msg).toBe("Bad Request");
           });
       });
       test("status 404, responds with error message when passed id that does not exist", () => {
