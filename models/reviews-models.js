@@ -75,7 +75,7 @@ exports.fetchReviews = (
   LEFT JOIN comments
   ON reviews.review_id = comments.review_id`;
 
-  if (category.length > 0) {
+  if (category) {
     queryStr += ` WHERE reviews.category = '${category}'`;
   }
 
