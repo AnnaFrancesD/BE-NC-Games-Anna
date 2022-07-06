@@ -36,7 +36,28 @@ exports.updateReviewByReviewId = (id, update) => {
   return Promise.reject({ status: 400, msg: "Bad Request" });
 };
 
-exports.fetchReviews = () => {
+exports.fetchReviews = (sort_by = "created_at", order = "DESC") => {
+  const validQueries = [
+    "title",
+    "designer",
+    "owner",
+    "review_img_url",
+    "review_body",
+    "category",
+    "created_at",
+    "votes",
+    "DESC",
+    "ASC",
+  ];
+
+  if (!validQueries.includes(sort_by)) {
+    return Promise.reject({ status: 400, msg: "Invalid Query" });
+  }
+
+  if (!validQueries.includes(order.toUpperCase())) {
+    return Promise.reject({ status: 400, msg: "Invalid Query" });
+  }
+
   return connection
     .query(
       `
@@ -44,7 +65,7 @@ exports.fetchReviews = () => {
   LEFT JOIN comments
   ON reviews.review_id = comments.review_id
   GROUP BY reviews.review_id
-  ORDER BY created_at DESC;`
+  ORDER BY ${sort_by} ${order};`
     )
     .then(({ rows }) => {
       return rows;

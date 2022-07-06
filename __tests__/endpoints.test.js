@@ -194,7 +194,7 @@ describe("app", () => {
           });
         });
     });
-    test("status 200, response array is sorted correctly", () => {
+    test("status 200, response array is sorted by date by default", () => {
       return request(app)
         .get("/api/reviews")
         .expect(200)
@@ -205,39 +205,75 @@ describe("app", () => {
           });
         });
     });
-    describe("GET /api/reviews/:review_id/comments", () => {
-      test("status 200, responds with an array of comments for the given review_id with the correct properties", () => {
+    describe("QUERIES", () => {
+      test("status 200, reviews can be sorted by any valid column", () => {
         return request(app)
-          .get("/api/reviews/3/comments")
-          .then(({ body: { comments } }) => {
-            expect(comments).toBeInstanceOf(Array);
-            comments.forEach((comment) => {
-              expect(comment).toHaveProperty("comment_id");
-              expect(comment).toHaveProperty("votes");
-              expect(comment).toHaveProperty("created_at");
-              expect(comment).toHaveProperty("author");
-              expect(comment).toHaveProperty("body");
-              expect(comment).toHaveProperty("review_id");
-            });
+          .get("/api/reviews/?sort_by=title")
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            expect(reviews).toBeSortedBy("title", { descending: true });
+          });
+      });
+      test("status 200, reviews can be sorted by specified order", () => {
+        return request(app)
+          .get("/api/reviews/?sort_by=owner&order=asc")
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            expect(reviews).toBeSortedBy("owner");
           });
       });
       describe("ERRORS", () => {
-        test("status 400, responds with error message when passed invalid review_id", () => {
+        test("status 400, responds with error message if sort_by query is invalid", () => {
           return request(app)
-            .get("/api/reviews/this-is-not-an-id-either/comments")
+            .get("/api/reviews/?sort_by=invalid_query")
             .expect(400)
             .then(({ body: { msg } }) => {
-              expect(msg).toBe("Invalid Review Id");
+              expect(msg).toBe("Invalid Query");
             });
         });
-        test("status 404, responds with error message when passed id that does not exist", () => {
+        test("status 400, responds with error message if order query is invalid", () => {
           return request(app)
-            .get("/api/reviews/99/comments")
-            .expect(404)
+            .get("/api/revews/?sort_by=title&order=invalid_query")
+            .expect(400)
             .then(({ body: { msg } }) => {
-              expect(msg).toBe("Review Id Not Found");
+              expect(msg).toBe("Invalid Query");
             });
         });
+      });
+    });
+  });
+  describe("GET /api/reviews/:review_id/comments", () => {
+    test("status 200, responds with an array of comments for the given review_id with the correct properties", () => {
+      return request(app)
+        .get("/api/reviews/3/comments")
+        .then(({ body: { comments } }) => {
+          expect(comments).toBeInstanceOf(Array);
+          comments.forEach((comment) => {
+            expect(comment).toHaveProperty("comment_id");
+            expect(comment).toHaveProperty("votes");
+            expect(comment).toHaveProperty("created_at");
+            expect(comment).toHaveProperty("author");
+            expect(comment).toHaveProperty("body");
+            expect(comment).toHaveProperty("review_id");
+          });
+        });
+    });
+    describe("ERRORS", () => {
+      test("status 400, responds with error message when passed invalid review_id", () => {
+        return request(app)
+          .get("/api/reviews/this-is-not-an-id-either/comments")
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Invalid Review Id");
+          });
+      });
+      test("status 404, responds with error message when passed id that does not exist", () => {
+        return request(app)
+          .get("/api/reviews/99/comments")
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Review Id Not Found");
+          });
       });
     });
   });
