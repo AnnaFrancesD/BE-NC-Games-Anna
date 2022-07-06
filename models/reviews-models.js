@@ -48,7 +48,13 @@ exports.fetchReviews = (
     "ASC",
   ];
 
+  const validCategories = ["euro game", "dexterity", "social deduction", ""];
+
   if (!validQueries.includes(sort_by)) {
+    return Promise.reject({ status: 400, msg: "Invalid Query" });
+  }
+
+  if (!validCategories.includes(category)) {
     return Promise.reject({ status: 400, msg: "Invalid Query" });
   }
 
