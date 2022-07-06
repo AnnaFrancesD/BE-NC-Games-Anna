@@ -260,6 +260,7 @@ describe("app", () => {
               body: "I was the werewolf...",
               review_id: 3,
               votes: 0,
+              created_at: expect.any(String),
             })
           );
         });
