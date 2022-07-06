@@ -227,7 +227,7 @@ describe("app", () => {
             .get("/api/reviews/this-is-not-an-id-either/comments")
             .expect(400)
             .then(({ body: { msg } }) => {
-              expect(msg).toBe("Invalid Review Id");
+              expect(msg).toBe("Bad Request");
             });
         });
         test("status 404, responds with error message when passed id that does not exist", () => {

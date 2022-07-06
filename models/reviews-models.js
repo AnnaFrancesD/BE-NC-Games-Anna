@@ -19,18 +19,15 @@ exports.fetchReviewByReviewId = (id) => {
 };
 
 exports.updateReviewByReviewId = (id, update) => {
-  if (typeof update.inc_votes === "number") {
-    const voteIncrement = update.inc_votes;
-    return connection
-      .query(
-        `UPDATE reviews SET votes = votes + $1 WHERE review_id = $2 RETURNING*;`,
-        [voteIncrement, id]
-      )
-      .then(({ rows }) => {
-        return rows[0];
-      });
-  }
-  return Promise.reject({ status: 400, msg: "Bad Request" });
+  const voteIncrement = update.inc_votes;
+  return connection
+    .query(
+      `UPDATE reviews SET votes = votes + $1 WHERE review_id = $2 RETURNING*;`,
+      [voteIncrement, id]
+    )
+    .then(({ rows }) => {
+      return rows[0];
+    });
 };
 
 exports.fetchReviews = () => {
@@ -49,22 +46,19 @@ exports.fetchReviews = () => {
 };
 
 exports.fetchCommentsByReviewId = (id) => {
-  if (!isNaN(Number(id))) {
-    return connection
-      .query(
-        `
+  return connection
+    .query(
+      `
   SELECT * FROM comments
 WHERE comments.review_id = $1;`,
-        [id]
-      )
-      .then(({ rows }) => {
-        if (rows.length > 0) {
-          return rows;
-        }
-        return Promise.reject({ status: 404, msg: "Review Id Not Found" });
-      });
-  }
-  return Promise.reject({ status: 400, msg: "Invalid Review Id" });
+      [id]
+    )
+    .then(({ rows }) => {
+      if (rows.length > 0) {
+        return rows;
+      }
+      return Promise.reject({ status: 404, msg: "Review Id Not Found" });
+    });
 };
 
 exports.insertComment = (id, newComment) => {
