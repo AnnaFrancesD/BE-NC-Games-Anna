@@ -231,12 +231,12 @@ describe("app", () => {
               expect(msg).toBe("Invalid Query");
             });
         });
-        test("status 400, responds with error message if order query is invalid", () => {
+        test("status 404, responds with error message if order query is invalid", () => {
           return request(app)
-            .get("/api/revews/?sort_by=title&order=invalid_query")
-            .expect(400)
+            .get("/api/revews/?order=hello")
+            .expect(404)
             .then(({ body: { msg } }) => {
-              expect(msg).toBe("Invalid Query");
+              expect(msg).toBe("Not Found");
             });
         });
       });
