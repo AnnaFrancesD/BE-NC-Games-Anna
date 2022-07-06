@@ -1,7 +1,7 @@
 const connection = require("../db/connection");
 
 exports.fetchReviewByReviewId = (id) => {
-  if (typeof Number(id) === "number" && !isNaN(Number(id))) {
+  if (!isNaN(Number(id))) {
     return connection
       .query(
         `SELECT a.*, COUNT (b.review_id) AS comment_count FROM reviews a
@@ -74,7 +74,8 @@ exports.insertComment = (id, newComment) => {
   if (
     newComment.username &&
     newComment.body &&
-    Object.keys(newComment).length === 2
+    Object.keys(newComment).length === 2 &&
+    !isNaN(Number(id))
   ) {
     const { username, body } = newComment;
     return connection
@@ -85,8 +86,8 @@ exports.insertComment = (id, newComment) => {
   `,
         [username, body, id]
       )
-      .then(({ rows }) => {
-        return rows[0];
+      .then((review) => {
+        return review.rows[0];
       });
   }
   return Promise.reject({ status: 400, msg: "Bad Request" });

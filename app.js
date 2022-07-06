@@ -23,6 +23,21 @@ app.post("/api/reviews/:review_id/comments", postComment);
 
 //ERROR HANDLING
 
+//PSQL error handlers
+app.use((err, req, res, next) => {
+  if (err.code === "22P02") {
+    res.status(400).send({ msg: "Bad Request" });
+  }
+  next(err);
+});
+
+app.use((err, req, res, next) => {
+  if (err.code === "23503") {
+    res.status(404).send({ msg: "Not Found" });
+  }
+  next(err);
+});
+
 //Custom error handlers
 app.get("*", (req, res) => {
   res.status(404).send({ msg: "Not Found" });

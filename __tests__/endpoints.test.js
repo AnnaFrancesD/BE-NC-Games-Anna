@@ -271,6 +271,7 @@ describe("app", () => {
         return request(app)
           .post("/api/reviews/3/comments")
           .expect(400)
+          .send(newComment)
           .then(({ body: { msg } }) => {
             expect(msg).toBe("Bad Request");
           });
@@ -284,8 +285,48 @@ describe("app", () => {
         return request(app)
           .post("/api/reviews/3/comments")
           .expect(400)
+          .send(newComment)
           .then(({ body: { msg } }) => {
             expect(msg).toBe("Bad Request");
+          });
+      });
+      test("status 400, responds with error message if review id is invalid", () => {
+        const newComment = {
+          username: "bainesface",
+          body: "I was the werewolf...",
+        };
+        return request(app)
+          .post("/api/reviews/not_an_id/comments")
+          .expect(400)
+          .send(newComment)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad Request");
+          });
+      });
+      test("status 404, responds with error message if review id does not exist", () => {
+        const newComment = {
+          username: "bainesface",
+          body: "I was the werewolf...",
+        };
+        return request(app)
+          .post("/api/reviews/99/comments")
+          .expect(404)
+          .send(newComment)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Not Found");
+          });
+      });
+      test("status 404, responds with error message if username does not exist", () => {
+        const newComment = {
+          username: "Anna",
+          body: "comment",
+        };
+        return request(app)
+          .post("/api/reviews/3/comments")
+          .expect(404)
+          .send(newComment)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Not Found");
           });
       });
     });
