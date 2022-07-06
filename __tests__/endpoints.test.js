@@ -72,7 +72,7 @@ describe("app", () => {
           .get("/api/reviews/this-is-not-an-id")
           .expect(400)
           .then(({ body: { msg } }) => {
-            expect(msg).toBe("Invalid Review Id");
+            expect(msg).toBe("Bad Request");
           });
       });
       test("status 404, responds with error message when passed an id that does not exist", () => {
@@ -80,7 +80,7 @@ describe("app", () => {
           .get("/api/reviews/999")
           .expect(404)
           .then(({ body: { msg } }) => {
-            expect(msg).toBe("Review Id Not Found");
+            expect(msg).toBe("Not Found");
           });
       });
     });
@@ -284,10 +284,10 @@ describe("app", () => {
         };
         return request(app)
           .post("/api/reviews/3/comments")
-          .expect(400)
+          .expect(404)
           .send(newComment)
           .then(({ body: { msg } }) => {
-            expect(msg).toBe("Bad Request");
+            expect(msg).toBe("Not Found");
           });
       });
       test("status 400, responds with error message if review id is invalid", () => {

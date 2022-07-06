@@ -1,24 +1,21 @@
 const connection = require("../db/connection");
 
 exports.fetchReviewByReviewId = (id) => {
-  if (!isNaN(Number(id))) {
-    return connection
-      .query(
-        `SELECT a.*, COUNT (b.review_id) AS comment_count FROM reviews a
+  return connection
+    .query(
+      `SELECT a.*, COUNT (b.review_id) AS comment_count FROM reviews a
         LEFT JOIN comments b
         ON a.review_id = b.review_id
         WHERE a.review_id = $1
         GROUP BY a.review_id;`,
-        [id]
-      )
-      .then((review) => {
-        if (review.rowCount > 0) {
-          return review.rows[0];
-        }
-        return Promise.reject({ status: 404, msg: "Review Id Not Found" });
-      });
-  }
-  return Promise.reject({ status: 400, msg: "Invalid Review Id" });
+      [id]
+    )
+    .then((review) => {
+      if (review.rowCount > 0) {
+        return review.rows[0];
+      }
+      return Promise.reject({ status: 404, msg: "Not Found" });
+    });
 };
 
 exports.updateReviewByReviewId = (id, update) => {
@@ -71,24 +68,16 @@ WHERE comments.review_id = $1;`,
 };
 
 exports.insertComment = (id, newComment) => {
-  if (
-    newComment.username &&
-    newComment.body &&
-    Object.keys(newComment).length === 2 &&
-    !isNaN(Number(id))
-  ) {
-    const { username, body } = newComment;
-    return connection
-      .query(
-        `
+  const { username, body } = newComment;
+  return connection
+    .query(
+      `
   INSERT INTO comments (author, body, review_id)
   VALUES ($1, $2, $3) RETURNING *;
   `,
-        [username, body, id]
-      )
-      .then((review) => {
-        return review.rows[0];
-      });
-  }
-  return Promise.reject({ status: 400, msg: "Bad Request" });
+      [username, body, id]
+    )
+    .then((review) => {
+      return review.rows[0];
+    });
 };
