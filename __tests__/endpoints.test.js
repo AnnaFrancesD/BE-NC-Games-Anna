@@ -80,7 +80,7 @@ describe("app", () => {
           .get("/api/reviews/999")
           .expect(404)
           .then(({ body: { msg } }) => {
-            expect(msg).toBe("Review Id Not Found");
+            expect(msg).toBe("Not Found");
           });
       });
     });
@@ -311,9 +311,99 @@ describe("app", () => {
             .get("/api/reviews/99/comments")
             .expect(404)
             .then(({ body: { msg } }) => {
-              expect(msg).toBe("Review Id Not Found");
+              expect(msg).toBe("Not Found");
             });
         });
+      });
+    });
+  });
+  describe("POST /api/reviews/:review_id/comments", () => {
+    test("status 201, responds with the posted comment", () => {
+      const newComment = {
+        username: "bainesface",
+        body: "I was the werewolf...",
+      };
+      return request(app)
+        .post("/api/reviews/3/comments")
+        .expect(201)
+        .send(newComment)
+        .then(({ body: { comment } }) => {
+          expect(comment).toBeInstanceOf(Object);
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: 7,
+              author: "bainesface",
+              body: "I was the werewolf...",
+              review_id: 3,
+              votes: 0,
+              created_at: expect.any(String),
+            })
+          );
+        });
+    });
+    describe("ERRORS", () => {
+      test("status 400, responds with error message if the request body is missing fields", () => {
+        const newComment = {};
+        return request(app)
+          .post("/api/reviews/3/comments")
+          .expect(400)
+          .send(newComment)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad Request");
+          });
+      });
+      test("status 400, responds with error message if the request body has extra fields", () => {
+        const newComment = {
+          username: "Anna",
+          body: "This is my review",
+          cheese: "cheese",
+        };
+        return request(app)
+          .post("/api/reviews/3/comments")
+          .expect(404)
+          .send(newComment)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Not Found");
+          });
+      });
+      test("status 400, responds with error message if review id is invalid", () => {
+        const newComment = {
+          username: "bainesface",
+          body: "I was the werewolf...",
+        };
+        return request(app)
+          .post("/api/reviews/not_an_id/comments")
+          .expect(400)
+          .send(newComment)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad Request");
+          });
+      });
+      test("status 404, responds with error message if review id does not exist", () => {
+        const newComment = {
+          username: "bainesface",
+          body: "I was the werewolf...",
+        };
+        return request(app)
+          .post("/api/reviews/99/comments")
+          .expect(404)
+          .send(newComment)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Not Found");
+          });
+      });
+      test("status 404, responds with error message if username does not exist", () => {
+        const newComment = {
+          username: "Anna",
+          body: "comment",
+        };
+        return request(app)
+          .post("/api/reviews/3/comments")
+          .expect(404)
+          .send(newComment)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Not Found");
+          });
       });
     });
   });

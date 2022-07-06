@@ -14,7 +14,7 @@ exports.fetchReviewByReviewId = (id) => {
       if (review.rowCount > 0) {
         return review.rows[0];
       }
-      return Promise.reject({ status: 404, msg: "Review Id Not Found" });
+      return Promise.reject({ status: 404, msg: "Not Found" });
     });
 };
 
@@ -87,7 +87,7 @@ WHERE comments.review_id = $1;`,
       if (rows.length > 0) {
         return rows;
       }
-      return Promise.reject({ status: 404, msg: "Review Id Not Found" });
+      return Promise.reject({ status: 404, msg: "Not Found" });
     });
 };
 
