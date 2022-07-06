@@ -222,6 +222,14 @@ describe("app", () => {
             expect(reviews).toBeSortedBy("owner");
           });
       });
+      test("status 200, reviews can be filtered by topic value specified in the query", () => {
+        return request(app)
+          .get("/api/reviews/?category=dexterity")
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            expect(reviews.length).toBe(11);
+          });
+      });
       describe("ERRORS", () => {
         test("status 400, responds with error message if sort_by query is invalid", () => {
           return request(app)

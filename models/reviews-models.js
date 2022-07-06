@@ -1,24 +1,21 @@
 const connection = require("../db/connection");
 
 exports.fetchReviewByReviewId = (id) => {
-  if (typeof Number(id) === "number" && !isNaN(Number(id))) {
-    return connection
-      .query(
-        `SELECT a.*, COUNT (b.review_id) AS comment_count FROM reviews a
+  return connection
+    .query(
+      `SELECT a.*, COUNT (b.review_id) AS comment_count FROM reviews a
         LEFT JOIN comments b
         ON a.review_id = b.review_id
         WHERE a.review_id = $1
         GROUP BY a.review_id;`,
-        [id]
-      )
-      .then((review) => {
-        if (review.rowCount > 0) {
-          return review.rows[0];
-        }
-        return Promise.reject({ status: 404, msg: "Review Id Not Found" });
-      });
-  }
-  return Promise.reject({ status: 400, msg: "Invalid Review Id" });
+      [id]
+    )
+    .then((review) => {
+      if (review.rowCount > 0) {
+        return review.rows[0];
+      }
+      return Promise.reject({ status: 404, msg: "Review Id Not Found" });
+    });
 };
 
 exports.updateReviewByReviewId = (id, update) => {
@@ -36,7 +33,11 @@ exports.updateReviewByReviewId = (id, update) => {
   return Promise.reject({ status: 400, msg: "Bad Request" });
 };
 
-exports.fetchReviews = (sort_by = "created_at", order = "DESC") => {
+exports.fetchReviews = (
+  sort_by = "created_at",
+  order = "DESC",
+  category = ""
+) => {
   const validQueries = [
     "title",
     "designer",
@@ -54,22 +55,23 @@ exports.fetchReviews = (sort_by = "created_at", order = "DESC") => {
     return Promise.reject({ status: 400, msg: "Invalid Query" });
   }
 
-  if (!validQueries.includes(order.toUpperCase())) {
-    return Promise.reject({ status: 400, msg: "Invalid Query" });
-  }
-
-  return connection
-    .query(
-      `
+  let queryStr = `
   SELECT reviews.*, COUNT (comments.review_id) AS comment_count FROM reviews
   LEFT JOIN comments
-  ON reviews.review_id = comments.review_id
-  GROUP BY reviews.review_id
-  ORDER BY ${sort_by} ${order};`
-    )
-    .then(({ rows }) => {
-      return rows;
-    });
+  ON reviews.review_id = comments.review_id`;
+
+  if (category.length > 0) {
+    queryStr += ` WHERE reviews.category = ${category}`;
+  }
+
+  queryStr += ` GROUP BY reviews.review_id
+  ORDER BY ${sort_by} ${order}`;
+
+  console.log(queryStr);
+
+  return connection.query(queryStr).then(({ rows }) => {
+    return rows;
+  });
 };
 
 exports.fetchCommentsByReviewId = (id) => {

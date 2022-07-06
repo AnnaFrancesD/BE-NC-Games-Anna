@@ -35,6 +35,7 @@ app.use((err, req, res, next) => {
 
 //Unhandled errors
 app.use((err, req, res, next) => {
+  console.log(err);
   res.status(500).send({ msg: "Server Error" });
 });
 
