@@ -14,12 +14,23 @@ exports.fetchReviewByReviewId = (id) => {
       if (review.rowCount > 0) {
         return review.rows[0];
       }
-      return Promise.reject({ status: 404, msg: "Review Id Not Found" });
+      return Promise.reject({ status: 404, msg: "Not Found" });
     });
 };
 
 exports.updateReviewByReviewId = (id, update) => {
   const voteIncrement = update.inc_votes;
+  return connection
+    .query(
+      `UPDATE reviews SET votes = votes + $1 WHERE review_id = $2 RETURNING*;`,
+      [voteIncrement, id]
+    )
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};
+
+exports.fetchReviews = () => {
   return connection
     .query(
       `UPDATE reviews SET votes = votes + $1 WHERE review_id = $2 RETURNING*;`,
