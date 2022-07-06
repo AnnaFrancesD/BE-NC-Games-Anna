@@ -264,5 +264,29 @@ describe("app", () => {
           );
         });
     });
+    describe("ERRORS", () => {
+      test("status 400, responds with error message if the request body is missing fields", () => {
+        const newComment = {};
+        return request(app)
+          .post("/api/reviews/3/comments")
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad Request");
+          });
+      });
+      test("status 400, responds with error message if the request body has extra fields", () => {
+        const newComment = {
+          username: "Anna",
+          body: "This is my review",
+          cheese: "cheese",
+        };
+        return request(app)
+          .post("/api/reviews/3/comments")
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad Request");
+          });
+      });
+    });
   });
 });

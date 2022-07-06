@@ -71,16 +71,23 @@ WHERE comments.review_id = $1;`,
 };
 
 exports.insertComment = (id, newComment) => {
-  const { username, body } = newComment;
-  return connection
-    .query(
-      `
+  if (
+    newComment.username &&
+    newComment.body &&
+    Object.keys(newComment).length === 2
+  ) {
+    const { username, body } = newComment;
+    return connection
+      .query(
+        `
   INSERT INTO comments (author, body, review_id)
   VALUES ($1, $2, $3) RETURNING *;
   `,
-      [username, body, id]
-    )
-    .then(({ rows }) => {
-      return rows[0];
-    });
+        [username, body, id]
+      )
+      .then(({ rows }) => {
+        return rows[0];
+      });
+  }
+  return Promise.reject({ status: 400, msg: "Bad Request" });
 };
