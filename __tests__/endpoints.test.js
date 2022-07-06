@@ -253,7 +253,14 @@ describe("app", () => {
             });
           });
       });
-
+      test("status 200, returns an empty array if the category exists but has no reviews", () => {
+        return request(app)
+          .get("/api/reviews?category=children's+games")
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            expect(reviews.length).toBe(0);
+          });
+      });
       describe("ERRORS", () => {
         test("status 400, responds with error message if sort_by query is invalid", () => {
           return request(app)

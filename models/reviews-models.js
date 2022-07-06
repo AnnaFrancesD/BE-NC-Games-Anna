@@ -48,7 +48,13 @@ exports.fetchReviews = (
 
   const validOrderByQueries = ["DESC", "ASC"];
 
-  const validCategories = ["euro game", "dexterity", "social deduction", ""];
+  const validCategories = [
+    "euro game",
+    "dexterity",
+    "social deduction",
+    "children's games",
+    "",
+  ];
 
   if (!validSortByQueries.includes(sort_by)) {
     return Promise.reject({ status: 400, msg: "Invalid Query" });
@@ -61,6 +67,8 @@ exports.fetchReviews = (
   if (!validCategories.includes(category)) {
     return Promise.reject({ status: 400, msg: "Invalid Query" });
   }
+
+  category = category.replace(`'`, `''`);
 
   let queryStr = `
   SELECT reviews.*, COUNT (comments.review_id) AS comment_count FROM reviews
