@@ -265,10 +265,10 @@ describe("app", () => {
         });
         test("status 404, responds with error message if order query is invalid", () => {
           return request(app)
-            .get("/api/revews/?order=hello")
-            .expect(404)
+            .get("/api/reviews/?order=hello")
+            .expect(400)
             .then(({ body: { msg } }) => {
-              expect(msg).toBe("Not Found");
+              expect(msg).toBe("Bad Request");
             });
         });
         test("status 400, responds with error message if category query is invalid", () => {
