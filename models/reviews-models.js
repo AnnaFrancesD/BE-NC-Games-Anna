@@ -30,23 +30,12 @@ exports.updateReviewByReviewId = (id, update) => {
     });
 };
 
-exports.fetchReviews = () => {
-  return connection
-    .query(
-      `UPDATE reviews SET votes = votes + $1 WHERE review_id = $2 RETURNING*;`,
-      [voteIncrement, id]
-    )
-    .then(({ rows }) => {
-      return rows[0];
-    });
-};
-
 exports.fetchReviews = (
   sort_by = "created_at",
   order = "DESC",
   category = ""
 ) => {
-  const validQueries = [
+  const validSortByQueries = [
     "title",
     "designer",
     "owner",
@@ -55,13 +44,23 @@ exports.fetchReviews = (
     "category",
     "created_at",
     "votes",
-    "DESC",
-    "ASC",
   ];
 
-  const validCategories = ["euro game", "dexterity", "social deduction", ""];
+  const validOrderByQueries = ["DESC", "ASC"];
 
-  if (!validQueries.includes(sort_by)) {
+  const validCategories = [
+    "euro game",
+    "dexterity",
+    "social deduction",
+    "children's games",
+    "",
+  ];
+
+  if (!validSortByQueries.includes(sort_by)) {
+    return Promise.reject({ status: 400, msg: "Invalid Query" });
+  }
+
+  if (!validOrderByQueries.includes(order.toUpperCase())) {
     return Promise.reject({ status: 400, msg: "Invalid Query" });
   }
 
@@ -74,14 +73,17 @@ exports.fetchReviews = (
   LEFT JOIN comments
   ON reviews.review_id = comments.review_id`;
 
-  if (category.length > 0) {
-    queryStr += ` WHERE reviews.category = '${category}'`;
+  const queryCategory = [];
+
+  if (category) {
+    category = category.replace(`'`, `''`);
+    queryStr += ` WHERE reviews.category = $1`;
+    queryCategory.push(category);
   }
 
   queryStr += ` GROUP BY reviews.review_id
   ORDER BY ${sort_by} ${order}`;
-
-  return connection.query(queryStr).then(({ rows }) => {
+  return connection.query(queryStr, queryCategory).then(({ rows }) => {
     return rows;
   });
 };
@@ -98,7 +100,7 @@ WHERE comments.review_id = $1;`,
       if (rows.length > 0) {
         return rows;
       }
-      return Promise.reject({ status: 404, msg: "Review Id Not Found" });
+      return Promise.reject({ status: 404, msg: "Not Found" });
     });
 };
 
