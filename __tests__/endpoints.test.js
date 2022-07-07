@@ -406,4 +406,15 @@ describe("app", () => {
       });
     });
   });
+  describe("GET /api", () => {
+    test("status 200, responds with a JSON object of all the available endpoints on the API", () => {
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toBeInstanceOf(Object);
+          expect(Object.keys(body).length).toBe(9);
+        });
+    });
+  });
 });
