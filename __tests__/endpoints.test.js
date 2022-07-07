@@ -216,10 +216,10 @@ describe("app", () => {
       });
       test("status 200, reviews can be sorted by specified order", () => {
         return request(app)
-          .get("/api/reviews/?sort_by=owner&order=asc")
+          .get("/api/reviews/?order=asc")
           .expect(200)
           .then(({ body: { reviews } }) => {
-            expect(reviews).toBeSortedBy("owner");
+            expect(reviews).toBeSortedBy("created_at");
           });
       });
       test("status 200, reviews can be filtered by topic value specified in the query (for request that returns one review", () => {
