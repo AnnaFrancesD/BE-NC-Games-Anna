@@ -67,3 +67,4 @@ To run the tests, use the following command:
 Before committing changes, use the following command to check that all the tests pass:
 
 - npm run prepare
+
