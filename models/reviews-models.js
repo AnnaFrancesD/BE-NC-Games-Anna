@@ -48,7 +48,13 @@ exports.fetchReviews = (
 
   const validOrderByQueries = ["DESC", "ASC"];
 
-  const validCategories = ["euro game", "dexterity", "social deduction", ""];
+  const validCategories = [
+    "euro game",
+    "dexterity",
+    "social deduction",
+    "children's games",
+    "",
+  ];
 
   if (!validSortByQueries.includes(sort_by)) {
     return Promise.reject({ status: 400, msg: "Invalid Query" });
@@ -67,14 +73,17 @@ exports.fetchReviews = (
   LEFT JOIN comments
   ON reviews.review_id = comments.review_id`;
 
-  if (category.length > 0) {
-    queryStr += ` WHERE reviews.category = '${category}'`;
+  const queryCategory = [];
+
+  if (category) {
+    category = category.replace(`'`, `''`);
+    queryStr += ` WHERE reviews.category = $1`;
+    queryCategory.push(category);
   }
 
   queryStr += ` GROUP BY reviews.review_id
   ORDER BY ${sort_by} ${order}`;
-
-  return connection.query(queryStr).then(({ rows }) => {
+  return connection.query(queryStr, queryCategory).then(({ rows }) => {
     return rows;
   });
 };
