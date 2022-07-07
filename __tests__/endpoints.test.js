@@ -4,6 +4,7 @@ const connection = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data/index");
 const req = require("express/lib/request");
+const endpoints = require("../endpoints.json");
 
 beforeEach(() => {
   return seed(testData);
@@ -430,8 +431,7 @@ describe("app", () => {
         .get("/api")
         .expect(200)
         .then(({ body }) => {
-          expect(body).toBeInstanceOf(Object);
-          expect(Object.keys(body).length).toBe(9);
+          expect(body).toEqual(endpoints);
         });
     });
     describe("DELETE /api/comments/:comment_id", () => {
