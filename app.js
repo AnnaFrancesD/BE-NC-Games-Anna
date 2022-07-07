@@ -8,6 +8,7 @@ const {
   postComment,
 } = require("./controllers/reviews-controllers");
 const { getUsers } = require("./controllers/users-controllers");
+const { getEndpoints } = require("./controllers/api-controller");
 const { deleteComment } = require("./controllers/comments-controllers");
 
 const app = express();
@@ -21,6 +22,7 @@ app.get("/api/users", getUsers);
 app.get("/api/reviews", getReviews);
 app.get("/api/reviews/:review_id/comments", getCommentsByReviewId);
 app.post("/api/reviews/:review_id/comments", postComment);
+app.get("/api", getEndpoints);
 app.delete("/api/comments/:comment_id", deleteComment);
 
 //ERROR HANDLING

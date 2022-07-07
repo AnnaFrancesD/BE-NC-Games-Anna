@@ -4,6 +4,7 @@ const connection = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data/index");
 const req = require("express/lib/request");
+const endpoints = require("../endpoints.json");
 
 beforeEach(() => {
   return seed(testData);
@@ -238,7 +239,7 @@ describe("app", () => {
             });
           });
       });
-      test("status 200, reviews can be filtered by topic value specified in the query (for request that returns multiple reviews", () => {
+      test("status 200, reviews can be filtered by topic value specified in the query (for request that returns multiple reviews)", () => {
         return request(app)
           .get("/api/reviews/?category=social+deduction")
           .expect(200)
@@ -251,14 +252,6 @@ describe("app", () => {
                 })
               );
             });
-          });
-      });
-      test("status 200, returns an empty array if the category exists but has no reviews", () => {
-        return request(app)
-          .get("/api/reviews?category=children's+games")
-          .expect(200)
-          .then(({ body: { reviews } }) => {
-            expect(reviews.length).toBe(0);
           });
       });
       describe("ERRORS", () => {
@@ -432,21 +425,31 @@ describe("app", () => {
       });
     });
   });
-  describe("DELETE /api/comments/:comment_id", () => {
-    test("status 204,  no response body sent", () => {
-      return request(app).delete("/api/comments/1").expect(204);
+  describe("GET /api", () => {
+    test("status 200, responds with a JSON object of all the available endpoints on the API", () => {
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toEqual(endpoints);
+        });
     });
-    describe("ERRORS", () => {
-      test("status 400, responds with error message if comment id is invalid", () => {
-        return request(app)
-          .delete("/api/comments/not_an_id")
-          .expect(400)
-          .then(({ body: { msg } }) => {
-            expect(msg).toBe("Bad Request");
-          });
+    describe("DELETE /api/comments/:comment_id", () => {
+      test("status 204,  no response body sent", () => {
+        return request(app).delete("/api/comments/1").expect(204);
       });
-      test("status 204 if comment id does not exist", () => {
-        return request(app).delete("/api/comments/12345").expect(204);
+      describe("ERRORS", () => {
+        test("status 400, responds with error message if comment id is invalid", () => {
+          return request(app)
+            .delete("/api/comments/not_an_id")
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).toBe("Bad Request");
+            });
+        });
+        test("status 204 if comment id does not exist", () => {
+          return request(app).delete("/api/comments/12345").expect(204);
+        });
       });
     });
   });
