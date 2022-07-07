@@ -194,7 +194,7 @@ describe("app", () => {
           });
         });
     });
-    test("status 200, response array is sorted correctly", () => {
+    test("status 200, response array is sorted by date by default", () => {
       return request(app)
         .get("/api/reviews")
         .expect(200)
@@ -204,6 +204,89 @@ describe("app", () => {
             descending: true,
           });
         });
+    });
+    describe("QUERIES", () => {
+      test("status 200, reviews can be sorted by any valid column", () => {
+        return request(app)
+          .get("/api/reviews/?sort_by=title")
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            expect(reviews).toBeSortedBy("title", { descending: true });
+          });
+      });
+      test("status 200, reviews can be sorted by specified order", () => {
+        return request(app)
+          .get("/api/reviews/?order=asc")
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            expect(reviews).toBeSortedBy("created_at");
+          });
+      });
+      test("status 200, reviews can be filtered by topic value specified in the query (for request that returns one review", () => {
+        return request(app)
+          .get("/api/reviews/?category=dexterity")
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            expect(reviews.length).toBe(1);
+            reviews.forEach((review) => {
+              expect(review).toEqual(
+                expect.objectContaining({
+                  title: "Jenga",
+                  category: "dexterity",
+                })
+              );
+            });
+          });
+      });
+      test("status 200, reviews can be filtered by topic value specified in the query (for request that returns multiple reviews", () => {
+        return request(app)
+          .get("/api/reviews/?category=social+deduction")
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            expect(reviews.length).toBe(11);
+            reviews.forEach((review) => {
+              expect(review).toEqual(
+                expect.objectContaining({
+                  category: "social deduction",
+                })
+              );
+            });
+          });
+      });
+      test("status 200, returns an empty array if the category exists but has no reviews", () => {
+        return request(app)
+          .get("/api/reviews?category=children's+games")
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            expect(reviews.length).toBe(0);
+          });
+      });
+      describe("ERRORS", () => {
+        test("status 400, responds with error message if sort_by query is invalid", () => {
+          return request(app)
+            .get("/api/reviews/?sort_by=invalid_query")
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).toBe("Invalid Query");
+            });
+        });
+        test("status 404, responds with error message if order query is invalid", () => {
+          return request(app)
+            .get("/api/reviews/?order=hello")
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).toBe("Invalid Query");
+            });
+        });
+        test("status 400, responds with error message if category query is invalid", () => {
+          return request(app)
+            .get("/api/reviews/?category=not_a_category")
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).toBe("Invalid Query");
+            });
+        });
+      });
     });
   });
   describe("GET /api/reviews/:review_id/comments", () => {
@@ -220,6 +303,24 @@ describe("app", () => {
             expect(comment).toHaveProperty("body");
             expect(comment).toHaveProperty("review_id");
           });
+        });
+    });
+    describe("ERRORS", () => {
+      test("status 400, responds with error message when passed invalid review_id", () => {
+        return request(app)
+          .get("/api/reviews/this-is-not-an-id-either/comments")
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad Request");
+          });
+      });
+    });
+    test("status 404, responds with error message when passed id that does not exist", () => {
+      return request(app)
+        .get("/api/reviews/99/comments")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Not Found");
         });
     });
     describe("ERRORS", () => {

@@ -30,19 +30,62 @@ exports.updateReviewByReviewId = (id, update) => {
     });
 };
 
-exports.fetchReviews = () => {
-  return connection
-    .query(
-      `
+exports.fetchReviews = (
+  sort_by = "created_at",
+  order = "DESC",
+  category = ""
+) => {
+  const validSortByQueries = [
+    "title",
+    "designer",
+    "owner",
+    "review_img_url",
+    "review_body",
+    "category",
+    "created_at",
+    "votes",
+  ];
+
+  const validOrderByQueries = ["DESC", "ASC"];
+
+  const validCategories = [
+    "euro game",
+    "dexterity",
+    "social deduction",
+    "children's games",
+    "",
+  ];
+
+  if (!validSortByQueries.includes(sort_by)) {
+    return Promise.reject({ status: 400, msg: "Invalid Query" });
+  }
+
+  if (!validOrderByQueries.includes(order.toUpperCase())) {
+    return Promise.reject({ status: 400, msg: "Invalid Query" });
+  }
+
+  if (!validCategories.includes(category)) {
+    return Promise.reject({ status: 400, msg: "Invalid Query" });
+  }
+
+  let queryStr = `
   SELECT reviews.*, COUNT (comments.review_id) AS comment_count FROM reviews
   LEFT JOIN comments
-  ON reviews.review_id = comments.review_id
-  GROUP BY reviews.review_id
-  ORDER BY created_at DESC;`
-    )
-    .then(({ rows }) => {
-      return rows;
-    });
+  ON reviews.review_id = comments.review_id`;
+
+  const queryCategory = [];
+
+  if (category) {
+    category = category.replace(`'`, `''`);
+    queryStr += ` WHERE reviews.category = $1`;
+    queryCategory.push(category);
+  }
+
+  queryStr += ` GROUP BY reviews.review_id
+  ORDER BY ${sort_by} ${order}`;
+  return connection.query(queryStr, queryCategory).then(({ rows }) => {
+    return rows;
+  });
 };
 
 exports.fetchCommentsByReviewId = (id) => {
@@ -71,7 +114,7 @@ exports.insertComment = (id, newComment) => {
   `,
       [username, body, id]
     )
-    .then((review) => {
-      return review.rows[0];
+    .then(({ rows }) => {
+      return rows[0];
     });
 };
