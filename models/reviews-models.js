@@ -105,6 +105,9 @@ WHERE comments.review_id = $1;`,
 };
 
 exports.insertComment = (id, newComment) => {
+  if (Object.keys(newComment).length !== 2) {
+    return Promise.reject({ status: 400, msg: "Bad Request" });
+  }
   const { username, body } = newComment;
   return connection
     .query(
@@ -120,6 +123,11 @@ exports.insertComment = (id, newComment) => {
 };
 
 exports.insertReview = (newReview) => {
+  console.log(Object.keys(newReview).length);
+  if (Object.keys(newReview).length !== 5) {
+    return Promise.reject({ status: 400, msg: "Bad Request" });
+  }
+
   const { owner, title, review_body, designer, category } = newReview;
   return connection
     .query(

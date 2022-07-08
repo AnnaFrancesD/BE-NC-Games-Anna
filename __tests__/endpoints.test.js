@@ -378,10 +378,10 @@ describe("app", () => {
         };
         return request(app)
           .post("/api/reviews/3/comments")
-          .expect(404)
+          .expect(400)
           .send(newComment)
           .then(({ body: { msg } }) => {
-            expect(msg).toBe("Not Found");
+            expect(msg).toBe("Bad Request");
           });
       });
       test("status 400, responds with error message if review id is invalid", () => {
@@ -561,6 +561,35 @@ describe("app", () => {
             })
           );
         });
+    });
+    describe("ERRORS", () => {
+      test("status 400, responds with error message if the request body is missing fields", () => {
+        const newReview = {};
+        return request(app)
+          .post("/api/reviews")
+          .expect(400)
+          .send(newReview)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad Request");
+          });
+      });
+      test("status 404, responds with error message if the request body has extra fields", () => {
+        const newReview = {
+          owner: "dav3rid",
+          title: "Among Us",
+          review_body: "Sneaky spy fun",
+          designer: "Marcus Bromander",
+          category: "social deduction",
+          cheese: "cheese",
+        };
+        return request(app)
+          .post("/api/reviews")
+          .expect(400)
+          .send(newReview)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad Request");
+          });
+      });
     });
   });
 });
