@@ -1,6 +1,7 @@
 NC Games API
 
 This is an API which can be used to access board game review data from a PSQL database.
+The list of endpoints currently available is included in endpoints.json.
 
 Link to the API: https://anna-nc-games-app.herokuapp.com/
 
