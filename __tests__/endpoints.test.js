@@ -531,4 +531,36 @@ describe("app", () => {
       });
     });
   });
+  describe("POST /api/reviews", () => {
+    test("status 201, responds with the newly added review with the correct properties", () => {
+      const newReview = {
+        owner: "dav3rid",
+        title: "Among Us",
+        review_body: "Sneaky spy fun",
+        designer: "Marcus Bromander",
+        category: "social deduction",
+      };
+      return request(app)
+        .post("/api/reviews")
+        .expect(201)
+        .send(newReview)
+        .then(({ body: { review } }) => {
+          expect(review).toEqual(
+            expect.objectContaining({
+              owner: "dav3rid",
+              title: "Among Us",
+              review_body: "Sneaky spy fun",
+              designer: "Marcus Bromander",
+              category: "social deduction",
+              review_id: 14,
+              votes: 0,
+              created_at: expect.any(String),
+              comment_count: "0",
+              review_img_url:
+                "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg",
+            })
+          );
+        });
+    });
+  });
 });

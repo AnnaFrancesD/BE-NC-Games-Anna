@@ -118,3 +118,31 @@ exports.insertComment = (id, newComment) => {
       return rows[0];
     });
 };
+
+exports.insertReview = (newReview) => {
+  const { owner, title, review_body, designer, category } = newReview;
+  return connection
+    .query(
+      `INSERT INTO reviews (owner, title, review_body, designer, category)
+      VALUES ($1, $2, $3, $4, $5) RETURNING review_id;
+     `,
+      [owner, title, review_body, designer, category]
+    )
+    .then(({ rows }) => {
+      const id = rows[0].review_id;
+      return id;
+    })
+    .then((id) => {
+      return connection.query(
+        `SELECT reviews.*, COUNT (comments.review_id) AS comment_count FROM reviews
+        LEFT JOIN comments
+        ON reviews.review_id = comments.review_id
+        WHERE reviews.review_id = $1
+        GROUP BY reviews.review_id;`,
+        [id]
+      );
+    })
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};
