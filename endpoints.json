@@ -130,7 +130,7 @@
   },
   "PATCH /api/comments/:comment_id" : {
     "description": "updates the specified review with the requested number of votes, returns the updated review",
-    "exampleResquest": {
+    "exampleRequest": {
       "incVotes": 1
     },
     "exampleResponse": {
@@ -141,6 +141,31 @@
         "author": "philippaclaire9",
         "review_id": 3,
         "created_at": "date created"
+      }
+    }
+  },
+  "POST /api/reviews" : {
+    "description": "posts a new review, returns the new review",
+    "exampleRequest": {
+      "owner": "dav3rid",
+      "title": "Among Us",
+      "review_body": "Sneaky spy fun",
+      "designer": "Marcus Bromander",
+      "category": "social deduction"
+    },
+    "exampleResponse": {
+      "review": {
+        "owner": "dav3rid",
+        "title": "Among Us",
+        "review_body": "Sneaky spy fun",
+        "designer": "Marcus Bromander",
+        "category": "social deduction",
+        "review_id": 14,
+        "votes": 0,
+        "created_at": "date created",
+        "comment_count": "0",
+        "review_img_url":
+          "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg"
       }
     }
   }

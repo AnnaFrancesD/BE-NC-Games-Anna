@@ -3,7 +3,6 @@ const app = require("../app");
 const connection = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data/index");
-const req = require("express/lib/request");
 const endpoints = require("../endpoints.json");
 
 beforeEach(() => {
@@ -573,7 +572,7 @@ describe("app", () => {
             expect(msg).toBe("Bad Request");
           });
       });
-      test("status 404, responds with error message if the request body has extra fields", () => {
+      test("status 400, responds with error message if the request body has extra fields", () => {
         const newReview = {
           owner: "dav3rid",
           title: "Among Us",
@@ -588,6 +587,38 @@ describe("app", () => {
           .send(newReview)
           .then(({ body: { msg } }) => {
             expect(msg).toBe("Bad Request");
+          });
+      });
+      test("status 404, responds with error message if the user does not exist", () => {
+        const newReview = {
+          owner: "anna",
+          title: "Among Us",
+          review_body: "Sneaky spy fun",
+          designer: "Marcus Bromander",
+          category: "social deduction",
+        };
+        return request(app)
+          .post("/api/reviews")
+          .expect(404)
+          .send(newReview)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Not Found");
+          });
+      });
+      test("status 404, responds with error message if the category does not exist", () => {
+        const newReview = {
+          owner: "dav3rid",
+          title: "Among Us",
+          review_body: "Sneaky spy fun",
+          designer: "Marcus Bromander",
+          category: "this is not a category",
+        };
+        return request(app)
+          .post("/api/reviews")
+          .expect(404)
+          .send(newReview)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Not Found");
           });
       });
     });
