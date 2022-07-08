@@ -490,44 +490,44 @@ describe("app", () => {
           });
       });
     });
-    describe("PATCH /api/comments/:comment_id", () => {
-      test("status 200, responds with the updated comment", () => {
-        const commentUpdate = { inc_votes: 1 };
+  });
+  describe("PATCH /api/comments/:comment_id", () => {
+    test("status 200, responds with the updated comment", () => {
+      const commentUpdate = { inc_votes: 1 };
+      return request(app)
+        .patch("/api/comments/3")
+        .expect(200)
+        .send(commentUpdate)
+        .then(({ body: { comment } }) => {
+          expect(comment).toBeInstanceOf(Object);
+          expect(comment).toEqual(
+            expect.objectContaining({
+              votes: 11,
+            })
+          );
+          expect(Object.keys(comment).length).toBe(6);
+        });
+    });
+    describe("ERRORS", () => {
+      test("status 400, responds with error message if req body is an empty object", () => {
+        const commentUpdate = {};
         return request(app)
-          .patch("/api/comments/3")
-          .expect(200)
+          .patch("/api/comments/2")
+          .expect(400)
           .send(commentUpdate)
-          .then(({ body: { comment } }) => {
-            expect(comment).toBeInstanceOf(Object);
-            expect(comment).toEqual(
-              expect.objectContaining({
-                votes: 11,
-              })
-            );
-            expect(Object.keys(comment).length).toBe(6);
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad Request");
           });
       });
-      describe("ERRORS", () => {
-        test("status 400, responds with error message if req body is an empty object", () => {
-          const commentUpdate = {};
-          return request(app)
-            .patch("/api/comments/2")
-            .expect(400)
-            .send(commentUpdate)
-            .then(({ body: { msg } }) => {
-              expect(msg).toBe("Bad Request");
-            });
-        });
-        test("status 400, responds with error message if update is of incorrect type", () => {
-          const commentUpdate = { inc_votes: "i am a string, not a number!" };
-          return request(app)
-            .patch("/api/comments/2")
-            .expect(400)
-            .send(commentUpdate)
-            .then(({ body: { msg } }) => {
-              expect(msg).toBe("Bad Request");
-            });
-        });
+      test("status 400, responds with error message if update is of incorrect type", () => {
+        const commentUpdate = { inc_votes: "i am a string, not a number!" };
+        return request(app)
+          .patch("/api/comments/2")
+          .expect(400)
+          .send(commentUpdate)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad Request");
+          });
       });
     });
   });
