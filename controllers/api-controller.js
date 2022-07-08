@@ -8,3 +8,12 @@ exports.getEndpoints = (req, res, next) => {
       next(err);
     });
 };
+
+exports.apiHealthCheck = (req, res, next) => {
+  res
+    .status(200)
+    .send({ msg: "All ok" })
+    .catch((err) => {
+      next(err);
+    });
+};
