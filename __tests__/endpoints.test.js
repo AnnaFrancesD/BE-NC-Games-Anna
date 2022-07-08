@@ -490,5 +490,23 @@ describe("app", () => {
           });
       });
     });
+    describe("PATCH /api/comments/:comment_id", () => {
+      test("status 200, responds with the updated comment", () => {
+        const commentUpdate = { inc_votes: 1 };
+        return request(app)
+          .patch("/api/comments/3")
+          .expect(200)
+          .send(commentUpdate)
+          .then(({ body: { comment } }) => {
+            expect(comment).toBeInstanceOf(Object);
+            expect(comment).toEqual(
+              expect.objectContaining({
+                votes: 11,
+              })
+            );
+            expect(Object.keys(comment).length).toBe(6);
+          });
+      });
+    });
   });
 });
