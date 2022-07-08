@@ -434,23 +434,33 @@ describe("app", () => {
           expect(body).toEqual(endpoints);
         });
     });
-    describe("DELETE /api/comments/:comment_id", () => {
-      test("status 204,  no response body sent", () => {
-        return request(app).delete("/api/comments/1").expect(204);
+  });
+  describe("DELETE /api/comments/:comment_id", () => {
+    test("status 204,  no response body sent", () => {
+      return request(app).delete("/api/comments/1").expect(204);
+    });
+    describe("ERRORS", () => {
+      test("status 400, responds with error message if comment id is invalid", () => {
+        return request(app)
+          .delete("/api/comments/not_an_id")
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad Request");
+          });
       });
-      describe("ERRORS", () => {
-        test("status 400, responds with error message if comment id is invalid", () => {
-          return request(app)
-            .delete("/api/comments/not_an_id")
-            .expect(400)
-            .then(({ body: { msg } }) => {
-              expect(msg).toBe("Bad Request");
-            });
-        });
-        test("status 204 if comment id does not exist", () => {
-          return request(app).delete("/api/comments/12345").expect(204);
-        });
+      test("status 204 if comment id does not exist", () => {
+        return request(app).delete("/api/comments/12345").expect(204);
       });
+    });
+  });
+  describe("GET /", () => {
+    test('status 200, responds with "all ok"', () => {
+      return request(app)
+        .get("/")
+        .expect(200)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("All ok");
+        });
     });
   });
 });
