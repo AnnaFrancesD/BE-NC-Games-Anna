@@ -463,4 +463,32 @@ describe("app", () => {
         });
     });
   });
+  describe("GET /api/users/:username", () => {
+    test("status 200, responds with a user object with the correct properties", () => {
+      return request(app)
+        .get("/api/users/mallionaire")
+        .expect(200)
+        .then(({ body: { user } }) => {
+          expect(user).toBeInstanceOf(Object);
+          expect(user).toEqual(
+            expect.objectContaining({
+              username: "mallionaire",
+              name: "haz",
+              avatar_url:
+                "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+            })
+          );
+        });
+    });
+    describe("ERRORS", () => {
+      test("status 404, responds with error message for a username that does not exist", () => {
+        return request(app)
+          .get("/api/users/not_a_username")
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Not Found");
+          });
+      });
+    });
+  });
 });
