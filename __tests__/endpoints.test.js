@@ -507,6 +507,28 @@ describe("app", () => {
             expect(Object.keys(comment).length).toBe(6);
           });
       });
+      describe("ERRORS", () => {
+        test("status 400, responds with error message if req body is an empty object", () => {
+          const commentUpdate = {};
+          return request(app)
+            .patch("/api/comments/2")
+            .expect(400)
+            .send(commentUpdate)
+            .then(({ body: { msg } }) => {
+              expect(msg).toBe("Bad Request");
+            });
+        });
+        test("status 400, responds with error message if update is of incorrect type", () => {
+          const commentUpdate = { inc_votes: "i am a string, not a number!" };
+          return request(app)
+            .patch("/api/comments/2")
+            .expect(400)
+            .send(commentUpdate)
+            .then(({ body: { msg } }) => {
+              expect(msg).toBe("Bad Request");
+            });
+        });
+      });
     });
   });
 });
