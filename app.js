@@ -1,33 +1,12 @@
 const express = require("express");
-const { getCategories } = require("./controllers/categories-controllers");
-const {
-  getReviewByReviewId,
-  patchReviewByReviewId,
-  getReviews,
-  getCommentsByReviewId,
-  postComment,
-} = require("./controllers/reviews-controllers");
-const { getUsers } = require("./controllers/users-controllers");
-const {
-  getEndpoints,
-  apiHealthCheck,
-} = require("./controllers/api-controller");
-const { deleteComment } = require("./controllers/comments-controllers");
+const { apiHealthCheck } = require("./controllers/api-controller");
+const apiRouter = require("./routers/api-router");
 
 const app = express();
 
 app.use(express.json());
-
-app.get("/api/categories", getCategories);
-app.get("/api/reviews/:review_id", getReviewByReviewId);
-app.patch("/api/reviews/:review_id", patchReviewByReviewId);
-app.get("/api/users", getUsers);
-app.get("/api/reviews", getReviews);
-app.get("/api/reviews/:review_id/comments", getCommentsByReviewId);
-app.post("/api/reviews/:review_id/comments", postComment);
-app.get("/api", getEndpoints);
-app.delete("/api/comments/:comment_id", deleteComment);
 app.get("/", apiHealthCheck);
+app.use("/api", apiRouter);
 
 //ERROR HANDLING
 
