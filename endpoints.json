@@ -127,6 +127,22 @@
         "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
       }
     }
+  },
+  "PATCH /api/comments/:comment_id" : {
+    "description": "updates the specified review with the requested number of votes, returns the updated review",
+    "exampleResquest": {
+      "incVotes": 1
+    },
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 3,
+        "body": "I didn't know dogs could play games",
+        "votes": 10,
+        "author": "philippaclaire9",
+        "review_id": 3,
+        "created_at": "date created"
+      }
+    }
   }
 }
 
