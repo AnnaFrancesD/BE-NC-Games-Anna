@@ -1,9 +1,11 @@
 const express = require("express");
 const { apiHealthCheck } = require("./controllers/api-controller");
 const apiRouter = require("./routers/api-router");
+const cors = require("cors");
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 app.get("/", apiHealthCheck);
 app.use("/api", apiRouter);
