@@ -54,6 +54,12 @@ exports.fetchReviews = (
     "social deduction",
     "children's games",
     "",
+    "strategy",
+    "hidden-roles",
+    "push-your-luck",
+    "roll-and-write",
+    "deck-building",
+    "engine-building",
   ];
 
   if (!validSortByQueries.includes(sort_by)) {
