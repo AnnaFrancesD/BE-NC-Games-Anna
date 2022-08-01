@@ -16,6 +16,7 @@
   },
   "GET /api/reviews": {
     "description": "serves an array of all reviews",
+    "queries":["category - any valid category e.g. strategy, sort_by - any valid column e.g title, votes", "order - asc or desc"],
     "exampleResponse": {
       "reviews": [
         {
